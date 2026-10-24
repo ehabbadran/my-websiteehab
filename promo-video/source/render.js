@@ -4,7 +4,7 @@ const { chromium } = require('playwright'); const { spawn } = require('child_pro
   const [w,h]= v==='port'?[1080,1920]:[1920,1080];
   const b=await chromium.launch(); const pg=await b.newPage({viewport:{width:w,height:h}});
   pg.on('pageerror',e=>console.log('ERR',e.message));
-  await pg.goto('file://'+__dirname+'/promo.html?v='+v); await pg.evaluate(()=>window.ready);
+  await pg.goto('file://'+__dirname+'/'+(process.env.PAGE||'promo.html')+'?v='+v); await pg.evaluate(()=>window.ready);
   const ff=spawn('ffmpeg',['-loglevel','error','-y','-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','-',
     '-c:v','libx264','-preset','slow','-crf','16','-pix_fmt','yuv420p','-movflags','+faststart',out],{stdio:['pipe','inherit','inherit']});
   for(let i=0;i<N;i++){ await pg.evaluate(t=>render(t),i/FPS);
