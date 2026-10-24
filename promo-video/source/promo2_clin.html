@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Case to Content: the 11pm problem</title>
+<style>
+@font-face{font-family:Inter;font-weight:300;src:url(node_modules/@fontsource/inter/files/inter-latin-300-normal.woff2)}
+@font-face{font-family:Inter;font-weight:400;src:url(node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:500;src:url(node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2)}
+@font-face{font-family:'DM Sans';font-weight:500;src:url(node_modules/@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2)}
+@font-face{font-family:'DM Sans';font-weight:700;src:url(node_modules/@fontsource/dm-sans/files/dm-sans-latin-700-normal.woff2)}
+@font-face{font-family:Cormorant;font-style:italic;font-weight:500;src:url(node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff2)}
+@font-face{font-family:Gelasio;font-style:italic;font-weight:400;src:url(node_modules/@fontsource/gelasio/files/gelasio-latin-400-italic.woff2)}
+
+:root{--navy:#0B1F3A;--navy2:#11294B;--navy3:#07152A;--gold:#C8A96E;--cream:#F0EDE4;--logo-gold:#F2C14B;
+  --ink:#111827;--grey:#9CA3AF;--line:#E5E7EB;--soft:#F3F4F6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy)}
+#stage{position:absolute;inset:0;overflow:hidden;font-family:'DM Sans',sans-serif;color:var(--cream);
+  background:radial-gradient(120% 90% at 50% 10%,var(--navy2) 0%,var(--navy) 55%,var(--navy3) 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(90px)}
+
+/* panel = label row + card */
+.panel{position:absolute}
+.plab{position:absolute;left:0;right:0;top:0;height:70px;display:flex;align-items:center;justify-content:space-between}
+.pname{font:600 26px Inter;letter-spacing:.14em;text-transform:uppercase}
+.clock{font:700 52px Inter;font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:center;gap:16px}
+.ready{font:600 22px Inter;color:#0A0A0A;background:var(--gold);border-radius:999px;padding:8px 16px;letter-spacing:.02em}
+.card{position:absolute;left:0;right:0;top:86px;bottom:0;border-radius:26px;overflow:hidden;background:#fff;
+  box-shadow:0 50px 100px rgba(0,0,0,.45);font-family:Inter;color:var(--ink)}
+
+/* old way doc */
+#old .pname{color:#9FB3CF}
+#old .clock{color:#fff}
+.doc{background:#ECEDEF}
+.dhdr{height:84px;display:flex;align-items:center;gap:16px;padding:0 32px;border-bottom:1px solid #DADCE0;background:#F5F6F7}
+.dicon{width:40px;height:48px;border-radius:6px;background:#fff;border:2px solid #C9CDD3;position:relative}
+.dicon:before,.dicon:after{content:'';position:absolute;left:8px;right:8px;height:3px;background:#C9CDD3;top:14px}
+.dicon:after{top:24px;right:14px}
+.dtitle{font:500 26px Inter;color:#6B7280}
+.dbody{position:absolute;left:32px;right:32px;top:116px;bottom:96px;background:#fff;border-radius:14px;border:1px solid #DADCE0;padding:30px 32px}
+.dtxt{font:400 34px/1.45 Inter;color:#1F2937}
+.caret{display:inline-block;width:3px;height:1.1em;background:#111;vertical-align:-0.18em;margin-left:2px}
+.dfoot{position:absolute;left:32px;right:32px;bottom:26px;display:flex;justify-content:space-between;font:500 24px Inter;color:#6B7280}
+.dfoot b{color:#B91C1C;font-weight:600}
+
+/* app (copied from the real app styles used in video 1) */
+#neu .pname{color:var(--gold)}
+#neu .clock{color:#fff}
+.hdr{position:absolute;left:0;right:0;top:0;height:92px;display:flex;align-items:center;padding:0 32px;gap:20px;border-bottom:1px solid var(--soft);background:#fff}
+.logo{width:52px;height:52px;background:#000;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.logo i{display:block;width:25px;height:25px;border:3.5px solid var(--logo-gold);border-radius:5px}
+.brand{font:600 28px Inter;letter-spacing:-.015em;color:#000}
+.editbtn{margin-left:auto;border:1.5px solid var(--line);border-radius:14px;padding:10px 18px;font:500 21px Inter;color:#374151}
+.screen{position:absolute;left:0;right:0;top:92px;bottom:0}
+.field{position:absolute;left:32px;right:32px;top:28px;border:1.5px solid var(--line);border-radius:20px;padding:24px 28px}
+.ftxt{font:400 27px/1.5 Inter;min-height:162px}
+.recbar{display:flex;align-items:center;gap:18px;margin-top:18px;padding-top:18px;border-top:1px solid var(--soft)}
+.mic{width:70px;height:70px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;flex:none;position:relative}
+.mic svg{width:32px;height:32px}
+.ring{position:absolute;inset:0;border-radius:50%;border:3px solid #DC2626}
+.wave{display:flex;align-items:center;gap:6px;height:60px;flex:1}
+.wave b{width:7px;border-radius:4px;background:#111827}
+.timer{font:600 25px Inter;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:10px}
+.timer .dot{width:12px;height:12px;border-radius:50%;background:#DC2626}
+.cta{position:absolute;left:32px;right:32px;height:86px;background:#000;color:#fff;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:16px;font:600 28px Inter}
+.spin{width:28px;height:28px;border-radius:50%;border:4px solid rgba(255,255,255,.25);border-top-color:#fff}
+.skel{position:absolute;border-radius:14px;background:#F3F4F6;overflow:hidden}
+.skel i{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)}
+.tabs{position:absolute;left:0;right:0;top:0;height:80px;display:flex;padding:0 14px;border-bottom:2px solid var(--soft)}
+.tab{position:relative;padding:0 18px;display:flex;align-items:center;font:500 24px Inter;color:var(--grey)}
+.tab.on{color:#000}
+.uline{position:absolute;bottom:-2px;height:5px;background:#000;border-radius:2px}
+.pill{position:absolute;font:600 17px Inter;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;background:var(--soft);border-radius:999px;padding:8px 15px}
+.slides{position:absolute;display:flex}
+.slide{position:relative;background:#0D0D0D;border-radius:10px;overflow:hidden;flex:none;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.slide .stripes{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 22px)}
+.slide .lab{position:absolute;font-family:Inter;font-weight:500;color:var(--gold);letter-spacing:.06em;text-transform:uppercase}
+.slide .lab:after{content:'';position:absolute;left:0;right:-6%;bottom:-.45em;height:1px;background:var(--gold);opacity:.8}
+.slide .bar{position:absolute;width:2px;background:#7D6A47}
+.slide .hl{position:absolute;font-family:Gelasio;font-style:italic;color:var(--cream);line-height:1.12}
+.slide .sub{position:absolute;font-family:Inter;font-weight:300;color:#A3A3A3;line-height:1.35}
+.slide .n{position:absolute;font-family:Inter;color:#4A4234}
+.capcard{position:absolute;border:1.5px solid var(--line);border-radius:20px;padding:28px 30px;background:#fff}
+.capcard p{font:400 26px/1.55 Inter;color:var(--ink)}
+
+#tap,#ripple{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;pointer-events:none}
+#tap{background:rgba(255,255,255,.55);border:3px solid rgba(17,24,39,.55)}
+#ripple{border:4px solid rgba(200,169,110,.9)}
+
+/* subtitles + full screen text */
+.sub{position:absolute;left:0;right:0;text-align:center;font:700 58px/1.1 'DM Sans';letter-spacing:-.02em;color:#fff}
+.sub .acc{color:var(--gold)}
+.full{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.big{font:700 128px/1.04 'DM Sans';letter-spacing:-.04em;color:#fff}
+.big.gold{color:var(--gold)}
+.bigclock{font:700 150px Inter;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin-bottom:40px;position:relative}
+.strike{position:absolute;left:-4%;right:-4%;top:52%;height:12px;background:#DC2626;border-radius:6px;transform-origin:left center}
+#end .mark{display:flex;align-items:center;gap:30px}
+#end .logo{width:110px;height:110px;border-radius:22px}
+#end .logo i{width:52px;height:52px;border-width:7px;border-radius:10px}
+#end .word{font:500 104px Cormorant;font-style:italic;color:var(--cream)}
+#end .word em{color:var(--gold)}
+#end .btn{margin-top:70px;background:var(--gold);color:#080808;font:500 44px 'DM Sans';padding:30px 84px;border-radius:6px}
+#end .url{margin-top:40px;font:500 40px 'DM Sans';color:rgba(240,237,228,.8);letter-spacing:.02em}
+
+.port .sub{font-size:62px}
+.port .big{font-size:112px}
+.port .bigclock{font-size:150px}
+.port #end .mark{flex-direction:column;gap:40px}
+.port #end .word{font-size:92px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="orb" id="orb1" style="width:900px;height:900px;background:#1E4A86;opacity:.35"></div>
+  <div class="orb" id="orb2" style="width:700px;height:700px;background:#C8A96E;opacity:.08"></div>
+
+  <!-- intro -->
+  <div class="full" id="intro"><div class="bigclock" id="iclock">9:00 pm</div>
+    <div class="big" id="i1">The case is done.</div><div class="big gold" id="i2">The post isn't.</div></div>
+
+  <!-- OLD WAY -->
+  <div class="panel" id="old">
+    <div class="plab"><div class="pname">The old way</div><div class="clock" id="oclock">9:00 pm</div></div>
+    <div class="card doc">
+      <div class="dhdr"><div class="dicon"></div><div class="dtitle">Untitled post</div></div>
+      <div class="dbody"><div class="dtxt" id="otxt"></div></div>
+      <div class="dfoot"><span id="owords">0 words</span><span>Drafts deleted: <b id="odel">0</b></span></div>
+    </div>
+  </div>
+
+  <!-- CASE TO CONTENT -->
+  <div class="panel" id="neu">
+    <div class="plab"><div class="pname">With Case to Content</div><div class="clock"><span class="ready" id="ready">Ready</span><span id="nclock">9:00 pm</span></div></div>
+    <div class="card" id="app">
+      <div class="hdr"><div class="logo"><i></i></div><div class="brand">Case to Content</div><div class="editbtn" id="editbtn">&larr; Edit inputs</div></div>
+      <div class="screen" id="scrInput">
+        <div class="field"><div class="ftxt" id="ntxt"></div>
+          <div class="recbar"><div class="mic" id="mic"><div class="ring" id="ring"></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg></div>
+            <div class="wave" id="wave"></div>
+            <div class="timer" id="timer"><span class="dot" id="rdot"></span><span id="tval">0:00</span></div></div></div>
+        <div class="cta" id="gen"><span class="spin" id="spin"></span><span id="genlbl">Generate</span></div>
+        <div class="skel" id="sk1"><i></i></div><div class="skel" id="sk2"><i></i></div><div class="skel" id="sk3"><i></i></div>
+      </div>
+      <div class="screen" id="scrResult">
+        <div class="tabs"><div class="tab on" id="tSlides">Slides</div><div class="tab" id="tReel">Reel video</div><div class="tab" id="tCaption">Caption</div><div class="tab" id="tScript">Script</div><div class="tab" id="tHash">Hashtags</div><div class="uline" id="uline"></div></div>
+        <div class="pill" id="illus">Illustrative example · Fictional case</div>
+        <div class="slides" id="slides"></div>
+        <div class="capcard" id="capcard"><p>This week's teaching case: a ring finger that had slowly curled to forty degrees with Dupuytren's contracture.</p>
+          <p style="margin-top:16px">Under a regional block we released the tight cord. Six weeks on, the finger is fully straight and the guitar is back out. Every hand is different, so a proper assessment comes first.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub" id="s1">Same case. <span class="acc">Same evening.</span></div>
+  <div class="sub" id="s2">One is <span class="acc">already done.</span></div>
+  <div class="sub" id="s3">The other is <span class="acc">still writing.</span></div>
+  <div class="sub" id="s4">You check every word. <span class="acc">Then post.</span></div>
+
+  <div class="full" id="back"><div class="bigclock" id="bclock">11:00 pm<div class="strike" id="strike"></div></div>
+    <div class="big" id="b1">Get your</div><div class="big gold" id="b2">evenings back.</div></div>
+
+  <div class="full" id="talk"><div class="big" id="k1">Talk for 30 seconds.</div><div class="big gold" id="k2">Post in minutes.</div></div>
+
+  <div class="full" id="end"><div class="mark" id="emark"><div class="logo"><i></i></div><div class="word">Case to <em>Content</em></div></div>
+    <div class="btn" id="ebtn">Start free</div><div class="url" id="eurl">casetocontent.com</div></div>
+
+  <div id="ripple"></div><div id="tap"></div>
+</div>
+
+<script>
+const PORT = new URLSearchParams(location.search).get('v') === 'port';
+const W = PORT?1080:1920, H = PORT?1920:1080;
+const $ = id => document.getElementById(id);
+$('stage').className = PORT?'port':'land';
+
+/* ---------- shared timeline data (mirrored in audio2.py) ---------- */
+const OLD_SEGS = [ // [typeStart, typeEnd, delStart, delEnd, text]
+  [4.4, 5.8, 6.0, 6.5, "Today I treated a finger"],
+  [6.8, 8.0, 8.2, 8.6, "Dupuytren's is a condition"],
+  [8.9, 10.3, 10.5, 10.9, "Forty degrees of contracture"],
+  [11.2, 12.6, 12.9, 13.3, "Ok. Let me start again."],
+  [13.7, 14.9, 99, 99, "Maybe tomorrow..."],
+];
+const DICT = "Fictional teaching case. Ring finger bent to forty degrees with Dupuytren's. Fasciectomy under a regional block. Fully straight at six weeks.";
+const SLIDES = [
+  {lab:'Hand surgery', hl:'Straightening a bent finger', sub:'Dupuytren\'s contracture of the ring finger.'},
+  {lab:'The case', hl:'Forty degrees bent. Now fully straight.', sub:'Fasciectomy under a regional block.'},
+  {lab:'Six weeks on', hl:'Back to playing the guitar', sub:'Fictional teaching case. Every hand is different.'},
+];
+const REC0=4.2, REC1=7.2, GEN=7.6, DONE=10.2, CAPTAP=12.6;
+
+/* ---------- layout ---------- */
+const P = PORT ? {old:{x:60,y:110,w:960,h:770}, neu:{x:60,y:930,w:960,h:770}, sub:1750, S:262, g:22}
+               : {old:{x:60,y:60,w:880,h:840}, neu:{x:980,y:60,w:880,h:840}, sub:950, S:248, g:20};
+for (const k of ['old','neu']) Object.assign($(k).style,{left:P[k].x+'px',top:P[k].y+'px',width:P[k].w+'px',height:P[k].h+'px'});
+for (const s of ['s1','s2','s3','s4']) $(s).style.top = P.sub+'px';
+$('orb1').style.cssText += ';left:-250px;top:-300px'; $('orb2').style.cssText += ';right:-200px;bottom:-300px';
+for (let i=0;i<24;i++) $('wave').appendChild(document.createElement('b'));
+
+const AW=P.neu.w, CH=P.neu.h-86, SH=CH-92;
+const S=P.S, sc=S/1080;
+SLIDES.forEach((d,i)=>{const s=document.createElement('div'); s.className='slide'; s.style.width=s.style.height=S+'px'; if(i) s.style.marginLeft=P.g+'px';
+  s.innerHTML=`<div class="stripes"></div><div class="lab" style="left:${72*sc}px;top:${50*sc}px;font-size:${30*sc}px">${d.lab}</div>
+  <div class="bar" style="left:${34*sc}px;top:${310*sc}px;height:${300*sc}px"></div>
+  <div class="hl" style="left:${72*sc}px;right:${80*sc}px;bottom:${270*sc}px;font-size:${92*sc}px">${d.hl}</div>
+  <div style="position:absolute;left:${72*sc}px;right:${80*sc}px;top:${830*sc}px;font:300 ${38*sc}px/1.35 Inter;color:#A3A3A3;letter-spacing:0">${d.sub}</div>
+  <div class="n" style="right:${72*sc}px;bottom:${40*sc}px;font-size:${26*sc}px">0${i+1} / 03</div>`;
+  $('slides').appendChild(s);});
+$('gen').style.top='360px';
+const skTop=476, skW=(AW-64-40)/3;
+['sk1','sk2','sk3'].forEach((id,i)=>Object.assign($(id).style,{left:(32+i*(skW+20))+'px',top:skTop+'px',width:skW+'px',height:Math.min(skW,SH-skTop-26)+'px'}));
+const slW=3*S+2*P.g;
+Object.assign($('slides').style,{left:((AW-slW)/2)+'px',top:'170px'});
+Object.assign($('illus').style,{left:((AW-slW)/2)+'px',top:'104px'});
+Object.assign($('capcard').style,{left:'32px',right:'32px',top:'170px'});
+
+/* ---------- maths ---------- */
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), p=(t,a,b)=>cl((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const win=(t,a,b,fi=.35,fo=.35)=>Math.min(p(t,a,a+fi),1-p(t,b-fo,b));
+function setO(e,o){e.style.opacity=o;e.style.visibility=o<=.001?'hidden':'visible'}
+const fmt=m=>{m=Math.round(m);const h=21+Math.floor(m/60),mm=m%60;return `${h-12}:${String(mm).padStart(2,'0')} pm`};
+const oldMin=t=>120*Math.pow(p(t,4,17.5),1.35);
+function newMin(t){ if(t<REC0) return 0; if(t<7.4) return p(t,REC0,7.4); return 1+p(t,7.4,DONE); }
+
+function oldText(t){
+  let txt='', dels=0;
+  for(const [a,b,c,d,s] of OLD_SEGS){
+    if(t<a) break;
+    if(t<c) { txt=s.slice(0,Math.round(s.length*p(t,a,b))); break; }
+    if(t<d) { txt=s.slice(0,Math.round(s.length*(1-p(t,c,d)))); break; }
+    dels++; txt='';
+  }
+  return {txt,dels};
+}
+function tapAt(el,t,t0){
+  const tap=$('tap'),rip=$('ripple'),k=p(t,t0-.35,t0+.45);
+  if(k<=0||k>=1){setO(tap,0);setO(rip,0);return}
+  const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+  for(const e of [tap,rip]){e.style.left=x+'px';e.style.top=y+'px'}
+  const pre=p(t,t0-.35,t0),post=p(t,t0,t0+.45);
+  setO(tap,Math.min(eo(pre),1-post)); tap.style.transform=`scale(${t<t0?1.25-.25*eo(pre):1-.2*Math.sin(post*Math.PI)})`;
+  setO(rip,t<t0?0:1-post); rip.style.transform=`scale(${1+post*1.8})`;
+}
+function inLine(e,t,a,dy=60){const k=p(t,a,a+.45);setO(e,cl(k*2));e.style.transform=`translateY(${(1-eo(k))*dy}px) scale(${.9+.1*back(k)})`}
+
+function render(t){
+  $('orb1').style.transform=`translate(${Math.sin(t*.25)*60}px,${Math.cos(t*.2)*40}px)`;
+  $('orb2').style.transform=`translate(${Math.cos(t*.22)*50}px,${Math.sin(t*.3)*40}px)`;
+
+  /* INTRO 0-3.2 */
+  setO($('intro'), win(t,0,3.3,.01,.4));
+  inLine($('iclock'),t,.15,30); inLine($('i1'),t,.7); inLine($('i2'),t,1.5);
+  $('intro').style.transform=`scale(${1+.04*p(t,0,3.3)})`;
+
+  /* PANELS 3-21 */
+  const pin=p(t,3.0,3.6);
+  const oldOut=p(t,18.0,18.6);
+  setO($('old'), Math.min(eo(pin),1-oldOut));
+  const ox = PORT? `translateY(${(1-eo(pin))*-120 - eo(oldOut)*200}px)` : `translateX(${(1-eo(pin))*-160 - eo(oldOut)*300}px)`;
+  $('old').style.transform=ox;
+  const neuOut=p(t,21.0,21.4);
+  setO($('neu'), Math.min(eo(pin),1-neuOut));
+  // move app panel to centre after old way leaves
+  const mv=eio(p(t,18.2,19.0));
+  let tx=0,ty=0; if(PORT) ty=(1-eo(pin))*120 + mv*(((H-P.neu.h)/2-60)-P.neu.y); else tx=(1-eo(pin))*160 + mv*((W-P.neu.w)/2-P.neu.x);
+  $('neu').style.transform=`translate(${tx}px,${ty}px) scale(${1+.06*mv})`;
+
+  // old way: clock, typing, deletions, mood
+  const om=oldMin(t); $('oclock').textContent=fmt(om);
+  $('oclock').style.color = om>90? `rgb(255,${Math.round(255-130*p(om,90,120))},${Math.round(255-130*p(om,90,120))})`:'#fff';
+  const {txt,dels}=oldText(t);
+  const caret = (Math.floor(t*2.2)%2===0) || (t>4.4 && t<15);
+  $('otxt').innerHTML = (txt||'') + (t>=3.6 && caret ? '<span class="caret"></span>':'');
+  $('odel').textContent = dels; {const nw=txt.trim()?txt.trim().split(/\s+/).length:0; $('owords').textContent = nw+(nw===1?' word':' words');}
+  $('old').querySelector('.card').style.filter=`saturate(${1-.6*p(t,10,17)}) brightness(${1-.12*p(t,10,17)})`;
+
+  // Case to Content side
+  $('nclock').textContent=fmt(newMin(t));
+  const rk=p(t,DONE+.1,DONE+.5); setO($('ready'),rk); $('ready').style.transform=`scale(${.6+.4*back(rk)})`;
+  const resultOn=t>=DONE;
+  setO($('scrInput'), 1-p(t,DONE-.3,DONE)); setO($('scrResult'), p(t,DONE,DONE+.3)); setO($('editbtn'),p(t,DONE,DONE+.3));
+  $('scrResult').style.transform=`translateX(${(1-p(t,DONE,DONE+.3))*40}px)`;
+  // record
+  const rec=t>=REC0+.1&&t<REC1;
+  tapAt($('mic'),t,REC0);
+  $('ntxt').innerHTML = DICT.slice(0,Math.round(DICT.length*p(t,REC0+.3,REC1-.1))) + (rec&&Math.floor(t*2.2)%2===0?'<span class="caret"></span>':'');
+  $('mic').style.background=rec?'#DC2626':'#000';
+  setO($('ring'),rec?.5+.3*Math.sin(t*7):0); $('ring').style.transform=`scale(${rec?1.1+.12*Math.sin(t*7):1})`;
+  [...$('wave').children].forEach((b,i)=>{const h=rec?8+52*(.35+.65*Math.abs(Math.sin(t*3.1+i*.37))*Math.abs(Math.cos(t*1.7-i*.21)))*(.55+.45*Math.sin(t*13+i*1.9)**2):8;
+    b.style.height=h+'px';b.style.opacity=rec?1:.25});
+  const secs = t<REC0?0: Math.round(30*p(t,REC0+.1,REC1));
+  $('tval').textContent='0:'+String(secs).padStart(2,'0'); setO($('timer'), t>=REC0?1:0); setO($('rdot'),rec?(Math.floor(t*2)%2?1:.25):0);
+  // generate
+  const gen=t>=GEN&&t<DONE; if(t>GEN-.5&&t<GEN+.6) tapAt($('gen'),t,GEN);
+  $('spin').style.display=gen?'block':'none'; $('spin').style.transform=`rotate(${t*400}deg)`;
+  $('genlbl').textContent=gen?'Generating…':'Generate';
+  ['sk1','sk2','sk3'].forEach((id,i)=>{const k=p(t,GEN+.25+i*.15,GEN+.7+i*.15);setO($(id),gen?eo(k):0);
+    $(id).style.transform=`translateY(${(1-eo(k))*30}px)`;$(id).firstChild.style.left=(-40+((t*70+i*25)%180))+'%'});
+  // results
+  const sl=$('slides').children;
+  for(let i=0;i<3;i++){const k=p(t,DONE+.2+i*.35,DONE+.8+i*.35);setO(sl[i],cl(k*2.5));sl[i].style.transform=`translateY(${(1-eo(k))*70}px) scale(${.85+.15*back(k)})`}
+  setO($('illus'),p(t,DONE+.1,DONE+.4));
+  if(t>CAPTAP-.5&&t<CAPTAP+.6) tapAt($('tCaption'),t,CAPTAP);
+  const onCap=t>=CAPTAP; $('tSlides').classList.toggle('on',!onCap); $('tCaption').classList.toggle('on',onCap);
+  const a=$('tSlides'),b=$('tCaption'),k=eio(p(t,CAPTAP,CAPTAP+.3)),ul=$('uline');
+  ul.style.left=(a.offsetLeft+(b.offsetLeft-a.offsetLeft)*k)+'px'; ul.style.width=(a.offsetWidth+(b.offsetWidth-a.offsetWidth)*k)+'px';
+  const so=1-p(t,CAPTAP,CAPTAP+.2); $('slides').style.opacity=so; $('slides').style.visibility=so>0?'visible':'hidden';
+  const kc=p(t,CAPTAP+.15,CAPTAP+.65); setO($('capcard'),eo(kc)); $('capcard').style.transform=`translateY(${(1-eo(kc))*60}px)`;
+
+  // subtitles
+  for(const [id,a0,b0] of [['s1',3.7,9.9],['s2',10.3,14.2],['s3',14.2,18.1],['s4',19.0,21.0]]){
+    const e=$(id),o=win(t,a0,b0,.35,.3); setO(e,o); e.style.transform=`translateY(${(1-eo(p(t,a0,a0+.45)))*30}px)`;}
+
+  /* GET YOUR EVENINGS BACK 21-24 */
+  setO($('back'),win(t,21.2,24.1,.3,.3));
+  inLine($('bclock'),t,21.3,30);
+  const rw=eio(p(t,22.0,22.8));
+  $('bclock').firstChild.textContent = fmt(120 - (120-2)*rw);
+  $('bclock').style.color = rw>=1? 'var(--gold)':'#fff';
+  $('strike').style.transform=`scaleX(${eo(p(t,21.55,21.85))*(1-p(t,21.95,22.05))})`;
+  inLine($('b1'),t,22.75); inLine($('b2'),t,23.05);
+
+  /* TALK 24-27 */
+  setO($('talk'),win(t,24.1,27.1,.2,.3)); inLine($('k1'),t,24.2); inLine($('k2'),t,24.9);
+  $('talk').style.transform=`scale(${1+.03*p(t,24.1,27.1)})`;
+
+  /* END 27-30 */
+  setO($('end'),p(t,27.0,27.4));
+  const m=p(t,27.05,27.55); $('emark').style.transform=`scale(${.8+.2*back(m)})`; setO($('emark'),cl(m*2));
+  const bt=p(t,27.5,27.95); setO($('ebtn'),cl(bt*2)); $('ebtn').style.transform=`translateY(${(1-eo(bt))*40}px) scale(${.85+.15*back(bt)})`;
+  const u=p(t,27.8,28.15); setO($('eurl'),u); $('eurl').style.transform=`translateY(${(1-eo(u))*20}px)`;
+}
+window.render=render;
+window.ready=document.fonts.ready.then(()=>{render(0);return true});
+if(!navigator.webdriver){let t0=performance.now();(function loop(){render(((performance.now()-t0)/1000)%30);requestAnimationFrame(loop)})()}
+</script>
+</body>
+</html>
